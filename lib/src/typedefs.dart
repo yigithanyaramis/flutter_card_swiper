@@ -26,6 +26,10 @@ typedef CardSwiperDirectionChange = void Function(
   CardSwiperDirection verticalDirection,
 );
 
+typedef CardSwiperSingleDirectionChange = void Function(
+  CardSwiperDirection direction,
+);
+
 typedef CardSwiperOnEnd = FutureOr<void> Function();
 
 typedef CardSwiperOnTapDisabled = FutureOr<void> Function();

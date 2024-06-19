@@ -114,6 +114,8 @@ class CardSwiper extends StatefulWidget {
   /// The function is called with the last detected horizontal direction and the last detected vertical direction
   final CardSwiperDirectionChange? onSwipeDirectionChange;
 
+  final CardSwiperSingleDirectionChange? onSwipeSingleDirectionChange;
+
   /// The offset of the back card from the front card.
   ///
   /// In order to keep the back card position same after changing the [backCardOffset],
@@ -139,6 +141,7 @@ class CardSwiper extends StatefulWidget {
     this.onSwipe,
     this.onEnd,
     this.onSwipeDirectionChange,
+    this.onSwipeSingleDirectionChange,
     this.allowedSwipeDirection = const AllowedSwipeDirection.all(),
     this.isLoop = true,
     this.numberOfCardsDisplayed = 2,

@@ -1,7 +1,6 @@
 part of 'card_swiper.dart';
 
-class _CardSwiperState<T extends Widget> extends State<CardSwiper>
-    with SingleTickerProviderStateMixin {
+class _CardSwiperState<T extends Widget> extends State<CardSwiper> with SingleTickerProviderStateMixin {
   late CardAnimation _cardAnimation;
   late AnimationController _animationController;
 
@@ -58,8 +57,7 @@ class _CardSwiperState<T extends Widget> extends State<CardSwiper>
         _detectedVerticalDirection = direction;
     }
 
-    widget.onSwipeDirectionChange
-        ?.call(_detectedHorizontalDirection, _detectedVerticalDirection);
+    widget.onSwipeDirectionChange?.call(_detectedHorizontalDirection, _detectedVerticalDirection);
   }
 
   @override
@@ -122,6 +120,9 @@ class _CardSwiperState<T extends Widget> extends State<CardSwiper>
           }
         },
         onPanUpdate: (tapInfo) {
+          double dx = tapInfo.delta.dx;
+          double dy = tapInfo.delta.dy;
+          _handleSwipeDirectionChange(dx, dy);
           if (!widget.isDisabled) {
             setState(
               () => _cardAnimation.update(
@@ -185,9 +186,7 @@ class _CardSwiperState<T extends Widget> extends State<CardSwiper>
 
   Future<void> _handleCompleteSwipe() async {
     final isLastCard = _currentIndex! == widget.cardsCount - 1;
-    final shouldCancelSwipe = await widget.onSwipe
-            ?.call(_currentIndex!, _nextIndex, _detectedDirection) ==
-        false;
+    final shouldCancelSwipe = await widget.onSwipe?.call(_currentIndex!, _nextIndex, _detectedDirection) == false;
 
     if (shouldCancelSwipe) {
       return;
@@ -224,14 +223,10 @@ class _CardSwiperState<T extends Widget> extends State<CardSwiper>
 
   CardSwiperDirection _getEndAnimationDirection() {
     if (_cardAnimation.left.abs() > widget.threshold) {
-      return _cardAnimation.left.isNegative
-          ? CardSwiperDirection.left
-          : CardSwiperDirection.right;
+      return _cardAnimation.left.isNegative ? CardSwiperDirection.left : CardSwiperDirection.right;
     }
     if (_cardAnimation.top.abs() > widget.threshold) {
-      return _cardAnimation.top.isNegative
-          ? CardSwiperDirection.top
-          : CardSwiperDirection.bottom;
+      return _cardAnimation.top.isNegative ? CardSwiperDirection.top : CardSwiperDirection.bottom;
     }
     return CardSwiperDirection.none;
   }
@@ -244,6 +239,21 @@ class _CardSwiperState<T extends Widget> extends State<CardSwiper>
       CardSwiperDirection.bottom => widget.allowedSwipeDirection.down,
       _ => false
     };
+  }
+
+  CardSwiperDirection determineSwipeDirection(double dx, double dy) {
+    if (dx.abs() > dy.abs()) {
+      return dx > 0 ? CardSwiperDirection.right : CardSwiperDirection.left;
+    } else {
+      return dy > 0 ? CardSwiperDirection.bottom : CardSwiperDirection.top;
+    }
+  }
+
+  void _handleSwipeDirectionChange(double dx, double dy) {
+    if (widget.onSwipeSingleDirectionChange != null) {
+      final direction = determineSwipeDirection(dx, dy);
+      widget.onSwipeSingleDirectionChange!(direction);
+    }
   }
 
   void _swipe(CardSwiperDirection direction) {
