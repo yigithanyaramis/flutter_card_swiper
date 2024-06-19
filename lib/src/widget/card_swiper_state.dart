@@ -120,9 +120,7 @@ class _CardSwiperState<T extends Widget> extends State<CardSwiper> with SingleTi
           }
         },
         onPanUpdate: (tapInfo) {
-          double dx = tapInfo.delta.dx;
-          double dy = tapInfo.delta.dy;
-          _handleSwipeDirectionChange(dx, dy);
+          _handleSwipeDirectionChange();
           if (!widget.isDisabled) {
             setState(
               () => _cardAnimation.update(
@@ -241,17 +239,19 @@ class _CardSwiperState<T extends Widget> extends State<CardSwiper> with SingleTi
     };
   }
 
-  CardSwiperDirection determineSwipeDirection(double dx, double dy) {
-    if (dx.abs() > dy.abs()) {
-      return dx > 0 ? CardSwiperDirection.right : CardSwiperDirection.left;
-    } else {
-      return dy > 0 ? CardSwiperDirection.bottom : CardSwiperDirection.top;
+  CardSwiperDirection determineSwipeDirection() {
+    if (_cardAnimation.left.abs() > widget.threshold) {
+      return _cardAnimation.left.isNegative ? CardSwiperDirection.left : CardSwiperDirection.right;
     }
+    if (_cardAnimation.top.abs() > widget.threshold) {
+      return _cardAnimation.top.isNegative ? CardSwiperDirection.top : CardSwiperDirection.bottom;
+    }
+    return CardSwiperDirection.none;
   }
 
-  void _handleSwipeDirectionChange(double dx, double dy) {
+  void _handleSwipeDirectionChange() {
     if (widget.onSwipeSingleDirectionChange != null) {
-      final direction = determineSwipeDirection(dx, dy);
+      final direction = determineSwipeDirection();
       widget.onSwipeSingleDirectionChange!(direction);
     }
   }
